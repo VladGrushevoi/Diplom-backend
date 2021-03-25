@@ -1,5 +1,6 @@
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using Models;
+using Npgsql.Bulk;
 
 namespace Services.AdminRepositories
 {
@@ -9,10 +10,10 @@ namespace Services.AdminRepositories
         {
         }
 
-        public async Task UpdateAppartments(Appartment model)
+        public void UpdateAppartments(List<Appartment> models)
         {
-            await context.apartment.AddAsync(model);
-            await context.SaveChangesAsync();
+            var uploader = new NpgsqlBulkUploader(context);
+            uploader.Insert(models);
         }
     }
 }
