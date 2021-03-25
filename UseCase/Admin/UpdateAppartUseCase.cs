@@ -34,11 +34,21 @@ namespace UseCase.Admin
             foreach (var item in this.OrdersUrlApi)
             {
                 var idOrders = await GetOrdersId(item);
+                List<Appartment> apparts = new List<Appartment>();
                 foreach (var id in idOrders)
                 {
-                    Appartment appart = await CreateAppart(id);
-                    await adminRepo.UpdateAppartments(appart);
+                    try
+                    {
+                        Appartment appart = await CreateAppart(id);
+                        apparts.Add(appart);
+                    }
+                    catch (System.Exception)
+                    {
+                        continue;
+                    }
                 }
+                adminRepo.UpdateAppartments(apparts);
+                apparts.Clear();
             }
             return new JsonResult("НУ тіпа");
         }
@@ -49,7 +59,6 @@ namespace UseCase.Admin
             var response = await _client.GetAsync(url);
             string data = await response.Content.ReadAsStringAsync();
             JObject json = JObject.Parse(data);
-            System.Console.WriteLine((double)json["total_square_meters"]);
             Appartment appartTemp = new Appartment()
             {
                 TotalSquare = Double.Parse(json["total_square_meters"].ToString()),
@@ -65,6 +74,7 @@ namespace UseCase.Admin
         private async Task<List<JToken>> GetOrdersId(string url)
         {
             var response = await _client.GetAsync(url);
+            System.Console.WriteLine(response.StatusCode);
             string data = await response.Content.ReadAsStringAsync();
             JObject json = JObject.Parse(data);
             var items = json["items"].ToList();
@@ -72,6 +82,7 @@ namespace UseCase.Admin
         }
         private string BuilderUrlByIdOrder(string id)
         {
+            System.Console.WriteLine(id);
             return $"https://developers.ria.com/dom/info/{id}?api_key=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH";
         }
     }
