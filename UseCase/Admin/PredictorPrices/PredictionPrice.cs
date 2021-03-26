@@ -12,19 +12,16 @@ namespace Usecase.Admin.PredictorPrices
     {
         private IAdminRepository adminRepository;
         private MLContext mlContext;
+        private ITransformer model;
+        private PredictionEngine<Appartment, ApartmentPrediction> predictionFunction;
 
         public PredictorPrice(IAdminRepository adminRepository)
         {
             this.adminRepository = adminRepository;
             this.mlContext = new MLContext(seed: 0);
-        }
-
-        public void CalculateModel()
-        {
             var aparts = adminRepository.GetAllApartment().Result;
-            var model = Train(mlContext, aparts);
-            Evaluate(mlContext, model);
-            TestSinglePrediction(mlContext, model);
+            this.model = Train(mlContext, aparts);
+            this.predictionFunction = mlContext.Model.CreatePredictionEngine<Appartment, ApartmentPrediction>(model);
         }
 
         private ITransformer Train(MLContext mlContext, List<Appartment> aparts)
@@ -42,37 +39,36 @@ namespace Usecase.Admin.PredictorPrices
             return model;
         }
 
-        private void Evaluate(MLContext mlContext, ITransformer model)
+        // private void Evaluate(MLContext mlContext, ITransformer model)
+        // {
+        //     IDataView dataView = mlContext.Data.LoadFromEnumerable<Appartment>(this.adminRepository.GetAllApartment().Result);
+
+        //     var predictions = model.Transform(dataView);
+        //     var metrics = mlContext.Regression.Evaluate(predictions, "Label", "Score");
+
+        //     Console.WriteLine();
+        //     Console.WriteLine($"*************************************************");
+        //     Console.WriteLine($"*       Model quality metrics evaluation         ");
+        //     Console.WriteLine($"*------------------------------------------------");
+        //     Console.WriteLine($"*       RSquared Score:      {metrics.RSquared:0.##}");
+        //     Console.WriteLine($"*       Root Mean Squared Error:      {metrics.RootMeanSquaredError}");
+        //     Console.WriteLine($"*************************************************");
+        // }
+
+        public float TestSinglePrediction(ApartmentInput input)
         {
-            IDataView dataView = mlContext.Data.LoadFromEnumerable<Appartment>(this.adminRepository.GetAllApartment().Result);
-
-            var predictions = model.Transform(dataView);
-            var metrics = mlContext.Regression.Evaluate(predictions, "Label", "Score");
-
-            Console.WriteLine();
-            Console.WriteLine($"*************************************************");
-            Console.WriteLine($"*       Model quality metrics evaluation         ");
-            Console.WriteLine($"*------------------------------------------------");
-            Console.WriteLine($"*       RSquared Score:      {metrics.RSquared:0.##}");
-            Console.WriteLine($"*       Root Mean Squared Error:      {metrics.RootMeanSquaredError}");
-            Console.WriteLine($"*************************************************");
-        }
-
-        private void TestSinglePrediction(MLContext mlContext, ITransformer model)
-        {
-            var predictionFunction = mlContext.Model.CreatePredictionEngine<Appartment, ApartmentPrediction>(model);
             var apartmentSample = new Appartment()
             {
-                TotalSquare = 67,
-                RoomsCount = 3,
-                Floor = 7,
-                DistrictValue = 24,
+                TotalSquare = input.TotalSquare.Value,
+                RoomsCount = input.RoomsCount.Value,
+                Floor = input.Floor.Value,
+                DistrictValue = input.GetDistrictValueByName(input.DistrictName),
                 Price = 0
             };
             var prediction = predictionFunction.Predict(apartmentSample);
-            Console.WriteLine($"**********************************************************************");
             Console.WriteLine($"Predicted price: {prediction.Price}");
-            Console.WriteLine($"**********************************************************************");
+
+            return prediction.Price;
         }
     }
 }
