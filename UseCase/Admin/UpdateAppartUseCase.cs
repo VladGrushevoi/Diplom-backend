@@ -61,14 +61,35 @@ namespace UseCase.Admin
             JObject json = JObject.Parse(data);
             Appartment appartTemp = new Appartment()
             {
-                TotalSquare = Double.Parse(json["total_square_meters"].ToString()),
-                RoomsCount = Int32.Parse(json["rooms_count"].ToString()),
-                StreetName = json["street_name"].ToString(),
-                Price = Double.Parse(json["priceArr"]["1"].ToString()),
-                Floor = Int32.Parse(json["floor"].ToString())
+                TotalSquare = float.Parse(json["total_square_meters"].ToString()),
+                RoomsCount = float.Parse(json["rooms_count"].ToString()),
+                DistrictValue = GetDistrictValueByName(json["district_name"].ToString()),
+                Price = float.Parse(json["priceArr"]["1"].ToString()),
+                Floor = float.Parse(json["floor"].ToString())
             };
 
             return appartTemp;
+        }
+
+        private float GetDistrictValueByName(string v)
+        {
+            List<string> districts = new List<string>(){
+                "700-летия","Благовесный","Богдановский","Водоконал-Невского","Грузовой порт",
+                "Дахновка","Днепровский","Железнодорожний вокзал","Зеленый","к-т Мир","Казбет",
+                "Калиновский","Крываловский","Луначарский","Молокозавод","Мытница","Мытница-речпорт",
+                "Мытница-центр","Пацаева","Победа","Приднепровский","Припортовый","Пятихатки","Район Д",
+                "Самолет","Седова","Соборный","Сосновка","Сосновский","Стадион","Химпоселок","Центр",
+                "Черкасский","Школьная","ЮЗР","Яблочный","Пригород","Белозерье","Геронимовка","Оршанец",
+                "Русская Поляна","Червоная Слобода","Село","Байбузы","Березняки","Крещатик","Леськи","Лозовок",
+                "Мошногорье","Мошны","Нечаевка","Новосёловка","Первомайское","Сагуновка","Светанок","Свидивок",
+                "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье"
+            };
+            
+            if(districts.Contains(v))
+            {
+                return districts.IndexOf(v) + 1;
+            }
+            return 0;
         }
 
         private async Task<List<JToken>> GetOrdersId(string url)
