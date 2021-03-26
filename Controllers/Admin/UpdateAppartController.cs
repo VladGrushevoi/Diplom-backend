@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Usecase.Admin.PredictorPrices;
 using UseCase.Admin;
+using UseCase.Admin.PredictorPrices.Data;
 
 namespace Controllers.Admin
 {
@@ -27,10 +28,10 @@ namespace Controllers.Admin
         }
 
         [HttpGet("predict")]
-        public IActionResult CalculatePrice()
+        public IActionResult CalculatePrice([FromBody] ApartmentInput input)
         {
-            prediction.CalculateModel();
-            return Ok("Заїбісь чекай консоль");
+            input.Price = prediction.TestSinglePrediction(input);
+            return Ok(input);
         }
     }
 }
