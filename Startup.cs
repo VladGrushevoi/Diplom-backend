@@ -8,6 +8,7 @@ using Services;
 using Services.AdminRepositories;
 using Usecase.Admin.PredictorPrices;
 using UseCase.Admin;
+using UseCase.Admin.PredictorPrices;
 
 namespace DiplomBackend
 {
@@ -29,6 +30,7 @@ namespace DiplomBackend
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<UpdateAppartUseCase, UpdateAppartUseCase>();
             services.AddScoped<PredictorPrice, PredictorPrice>();
+            services.AddScoped<CustomPrediction, CustomPrediction>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
