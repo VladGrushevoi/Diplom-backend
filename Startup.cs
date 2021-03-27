@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,17 @@ namespace DiplomBackend
     {
         public Startup(IConfiguration configuration)
         {
+            foreach (var line in File.ReadAllLines("./.env"))
+            {
+                var parts = line.Split(
+                    '=',
+                    StringSplitOptions.RemoveEmptyEntries);
+
+                if (parts.Length != 2)
+                    continue;
+
+                Environment.SetEnvironmentVariable(parts[0], parts[1]);
+            }
             Configuration = configuration;
         }
 

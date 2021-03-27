@@ -15,18 +15,19 @@ namespace UseCase.Admin
         public IAdminRepository adminRepo;
         private HttpClient _client;
         private string[] OrdersUrlApi = new string[]{
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=1000&characteristic[234][to]=26000&API_KEY=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH",
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=26001&characteristic[234][to]=32999&API_KEY=6fkeFdHbE2uRhnTxkyUIbNhvkdAAuIJmevrxaYWu",
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=33000&characteristic[234][to]=38500&API_KEY=nALJgEq4C8t4QVMldiKPL5tkMC4kSHhbNo95R3qs",
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=38501&characteristic[234][to]=50500&API_KEY=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH",
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=50501&characteristic[234][to]=75000&API_KEY=6fkeFdHbE2uRhnTxkyUIbNhvkdAAuIJmevrxaYWu",
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=75001&characteristic[234][to]=9999999&API_KEY=nALJgEq4C8t4QVMldiKPL5tkMC4kSHhbNo95R3qs"
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=1000&characteristic[234][to]=26000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_1")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=26001&characteristic[234][to]=32999&API_KEY={Environment.GetEnvironmentVariable("API_KEY_2")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=33000&characteristic[234][to]=38500&API_KEY={Environment.GetEnvironmentVariable("API_KEY_3")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=38501&characteristic[234][to]=50500&API_KEY={Environment.GetEnvironmentVariable("API_KEY_4")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=50501&characteristic[234][to]=75000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_1")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=75001&characteristic[234][to]=9999999&API_KEY={Environment.GetEnvironmentVariable("API_KEY_2")}"
         };
 
         public UpdateAppartUseCase(IAdminRepository adminRepo)
         {
             this.adminRepo = adminRepo;
             this._client = new HttpClient();
+            System.Console.WriteLine(Environment.GetEnvironmentVariable("API_KEY_1"));
         }
 
         public async Task<IActionResult> UpdateAppartment()
