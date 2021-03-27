@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Usecase.Admin.PredictorPrices;
 using UseCase.Admin;
+using UseCase.Admin.PredictorPrices;
 using UseCase.Admin.PredictorPrices.Data;
 
 namespace Controllers.Admin
@@ -12,12 +13,14 @@ namespace Controllers.Admin
     {
         public UpdateAppartUseCase updateAppartUseCase;
         public PredictorPrice prediction;
+        public CustomPrediction customPredictions;
         private IActionResult _output = null;
 
-        public UpdateAppartController(UpdateAppartUseCase updateAppartUseCase, PredictorPrice predictor)
+        public UpdateAppartController(UpdateAppartUseCase updateAppartUseCase, PredictorPrice predictor, CustomPrediction customPredictions)
         {
             this.updateAppartUseCase = updateAppartUseCase;
             this.prediction = predictor;
+            this.customPredictions = customPredictions;
         }
 
         [HttpGet("update-appartments")]
