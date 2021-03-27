@@ -16,11 +16,11 @@ namespace UseCase.Admin
         private HttpClient _client;
         private string[] OrdersUrlApi = new string[]{
             @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=1000&characteristic[234][to]=26000&API_KEY=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH",
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=26001&characteristic[234][to]=32999&API_KEY=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH",
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=33000&characteristic[234][to]=38500&API_KEY=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH",
+            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=26001&characteristic[234][to]=32999&API_KEY=6fkeFdHbE2uRhnTxkyUIbNhvkdAAuIJmevrxaYWu",
+            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=33000&characteristic[234][to]=38500&API_KEY=nALJgEq4C8t4QVMldiKPL5tkMC4kSHhbNo95R3qs",
             @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=38501&characteristic[234][to]=50500&API_KEY=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH",
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=50501&characteristic[234][to]=75000&API_KEY=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH",
-            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=75001&characteristic[234][to]=9999999&API_KEY=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH"
+            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=50501&characteristic[234][to]=75000&API_KEY=6fkeFdHbE2uRhnTxkyUIbNhvkdAAuIJmevrxaYWu",
+            @"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=75001&characteristic[234][to]=9999999&API_KEY=nALJgEq4C8t4QVMldiKPL5tkMC4kSHhbNo95R3qs"
         };
 
         public UpdateAppartUseCase(IAdminRepository adminRepo)
@@ -31,10 +31,11 @@ namespace UseCase.Admin
 
         public async Task<IActionResult> UpdateAppartment()
         {
+
+            List<Appartment> apparts = new List<Appartment>();
             foreach (var item in this.OrdersUrlApi)
             {
                 var idOrders = await GetOrdersId(item);
-                List<Appartment> apparts = new List<Appartment>();
                 foreach (var id in idOrders)
                 {
                     try
@@ -47,9 +48,9 @@ namespace UseCase.Admin
                         continue;
                     }
                 }
-                adminRepo.UpdateAppartments(apparts);
-                apparts.Clear();
             }
+            adminRepo.UpdateAppartments(apparts);
+            apparts.Clear();
             return new JsonResult("НУ тіпа");
         }
 
@@ -84,7 +85,7 @@ namespace UseCase.Admin
                 "Мошногорье","Мошны","Нечаевка","Новосёловка","Первомайское","Сагуновка","Светанок","Свидивок",
                 "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье"
             };
-            
+
             if(districts.Contains(v))
             {
                 return districts.IndexOf(v) + 1;
