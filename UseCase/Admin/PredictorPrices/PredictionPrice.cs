@@ -56,20 +56,11 @@ namespace Usecase.Admin.PredictorPrices
         //     Console.WriteLine($"*************************************************");
         // }
 
-        public IActionResult PredictPrice(ApartmentInput input)
+        public float PredictPrice(Appartment model)
         {
-            var apartmentSample = new Appartment()
-            {
-                TotalSquare = input.TotalSquare.Value,
-                RoomsCount = input.RoomsCount.Value,
-                Floor = input.Floor.Value,
-                DistrictValue = input.GetDistrictValueByName(input.DistrictName),
-                Price = 0
-            };
-            var prediction = predictionFunction.Predict(apartmentSample);
+            var prediction = predictionFunction.Predict(model);
             Console.WriteLine($"Predicted price: {prediction.Price}");
-            input.Price = prediction.Price;
-            return new JsonResult(new {Prediction = input, SimilarAppartments = adminRepository.GetSimilarAppartments(apartmentSample).Result});
+            return prediction.Price;
         }
     }
 }

@@ -8,9 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Services;
 using Services.AdminRepositories;
+using Services.RieltorRepository;
 using Usecase.Admin.PredictorPrices;
 using UseCase.Admin;
-using UseCase.Admin.PredictorPrices;
+using UseCase.Rieltor;
 
 namespace DiplomBackend
 {
@@ -41,9 +42,11 @@ namespace DiplomBackend
             services.AddDbContext<DbAppContext>(options => 
             options.UseNpgsql(Configuration.GetConnectionString("DiplomDatabase")));
             services.AddScoped<IAdminRepository, AdminRepository>();
+            services.AddScoped<IRieltorRepository, RieltorRepository>();
             services.AddScoped<UpdateAppartUseCase, UpdateAppartUseCase>();
+            services.AddScoped<PredictPriceUseCase, PredictPriceUseCase>();
+            services.AddScoped<SearchPortitableAppsUseCase, SearchPortitableAppsUseCase>();
             services.AddScoped<PredictorPrice, PredictorPrice>();
-            services.AddScoped<CustomPrediction, CustomPrediction>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

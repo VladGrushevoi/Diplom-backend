@@ -19,8 +19,8 @@ namespace UseCase.Admin
             $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=26001&characteristic[234][to]=32999&API_KEY={Environment.GetEnvironmentVariable("API_KEY_2")}",
             $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=33000&characteristic[234][to]=38500&API_KEY={Environment.GetEnvironmentVariable("API_KEY_3")}",
             $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=38501&characteristic[234][to]=50500&API_KEY={Environment.GetEnvironmentVariable("API_KEY_4")}",
-            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=50501&characteristic[234][to]=75000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_1")}",
-            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=75001&characteristic[234][to]=9999999&API_KEY={Environment.GetEnvironmentVariable("API_KEY_2")}"
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=50501&characteristic[234][to]=75000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_5")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=75001&characteristic[234][to]=9999999&API_KEY={Environment.GetEnvironmentVariable("API_KEY_6")}"
         };
 
         public UpdateAppartUseCase(IAdminRepository adminRepo)
@@ -99,6 +99,7 @@ namespace UseCase.Admin
         private async Task<List<JToken>> GetOrdersId(string url)
         {
             var response = await _client.GetAsync(url);
+            System.Console.WriteLine(response.StatusCode);
             string data = await response.Content.ReadAsStringAsync();
             JObject json = JObject.Parse(data);
             var items = json["items"].ToList();
