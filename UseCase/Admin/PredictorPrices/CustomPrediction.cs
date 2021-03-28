@@ -20,7 +20,7 @@ namespace UseCase.Admin.PredictorPrices
             this.adminRepository = adminRepository;
             this.apps = adminRepository.GetAllApartment().Result;
             this.apps.ForEach(item => prices.Add(item.Price));
-            Training();
+            //Training();
         }
 
         private void Training()
