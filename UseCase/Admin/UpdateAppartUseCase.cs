@@ -27,12 +27,11 @@ namespace UseCase.Admin
         {
             this.adminRepo = adminRepo;
             this._client = new HttpClient();
-            System.Console.WriteLine(Environment.GetEnvironmentVariable("API_KEY_1"));
         }
 
         public async Task<IActionResult> UpdateAppartment()
         {
-
+            int amountApps = 0;
             List<Appartment> apparts = new List<Appartment>();
             foreach (var item in this.OrdersUrlApi)
             {
@@ -50,9 +49,10 @@ namespace UseCase.Admin
                     }
                 }
             }
+            amountApps = apparts.Count;
             adminRepo.UpdateAppartments(apparts);
             apparts.Clear();
-            return new JsonResult("НУ тіпа");
+            return new JsonResult(new {Amount = "Add a "+ amountApps});
         }
 
         private async Task<Appartment> CreateAppart(JToken jToken)
@@ -63,6 +63,7 @@ namespace UseCase.Admin
             JObject json = JObject.Parse(data);
             Appartment appartTemp = new Appartment()
             {
+                IdFromApi = Int32.Parse(json["realty_id"].ToString()),
                 TotalSquare = float.Parse(json["total_square_meters"].ToString()),
                 RoomsCount = float.Parse(json["rooms_count"].ToString()),
                 DistrictValue = GetDistrictValueByName(json["district_name"].ToString()),
@@ -84,7 +85,8 @@ namespace UseCase.Admin
                 "Черкасский","Школьная","ЮЗР","Яблочный","Пригород","Белозерье","Геронимовка","Оршанец",
                 "Русская Поляна","Червоная Слобода","Село","Байбузы","Березняки","Крещатик","Леськи","Лозовок",
                 "Мошногорье","Мошны","Нечаевка","Новосёловка","Первомайское","Сагуновка","Светанок","Свидивок",
-                "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье"
+                "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье",
+                "Будище", "Ирдынь"
             };
 
             if(districts.Contains(v))
@@ -97,7 +99,6 @@ namespace UseCase.Admin
         private async Task<List<JToken>> GetOrdersId(string url)
         {
             var response = await _client.GetAsync(url);
-            System.Console.WriteLine(response.StatusCode);
             string data = await response.Content.ReadAsStringAsync();
             JObject json = JObject.Parse(data);
             var items = json["items"].ToList();

@@ -33,8 +33,8 @@ namespace Controllers.Admin
         [HttpGet("predict")]
         public IActionResult CalculatePrice([FromBody] ApartmentInput input)
         {
-            input.Price = prediction.TestSinglePrediction(input);
-            return Ok(input);
+            _output = prediction.PredictPrice(input);
+            return Ok(_output);
         }
     }
 }

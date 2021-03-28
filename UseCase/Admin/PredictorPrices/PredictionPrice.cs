@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.ML;
 using Models;
 using Services.AdminRepositories;
@@ -55,7 +56,7 @@ namespace Usecase.Admin.PredictorPrices
         //     Console.WriteLine($"*************************************************");
         // }
 
-        public float TestSinglePrediction(ApartmentInput input)
+        public IActionResult PredictPrice(ApartmentInput input)
         {
             var apartmentSample = new Appartment()
             {
@@ -67,8 +68,8 @@ namespace Usecase.Admin.PredictorPrices
             };
             var prediction = predictionFunction.Predict(apartmentSample);
             Console.WriteLine($"Predicted price: {prediction.Price}");
-
-            return prediction.Price;
+            input.Price = prediction.Price;
+            return new JsonResult(new {Prediction = input, SimilarAppartments = adminRepository.GetSimilarAppartments(apartmentSample).Result});
         }
     }
 }
