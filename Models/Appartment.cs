@@ -4,6 +4,7 @@ namespace Models
 {
     public class Appartment : BaseMosel
     {
+        public int IdFromApi { get; set; }
         [ColumnName("TotalSquare")]
         public float TotalSquare { get; set; }
         [ColumnName("RoomsCount")]
