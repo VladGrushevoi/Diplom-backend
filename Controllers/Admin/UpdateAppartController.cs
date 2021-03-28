@@ -12,15 +12,15 @@ namespace Controllers.Admin
     public class UpdateAppartController : ControllerBase
     {
         public UpdateAppartUseCase updateAppartUseCase;
-        public PredictorPrice prediction;
-        public CustomPrediction customPredictions;
+        public PredictPriceUseCase predictionUseCase;
+        //public CustomPrediction customPredictions;
         private IActionResult _output = null;
 
-        public UpdateAppartController(UpdateAppartUseCase updateAppartUseCase, PredictorPrice predictor, CustomPrediction customPredictions)
+        public UpdateAppartController(UpdateAppartUseCase updateAppartUseCase, PredictPriceUseCase predictor)
         {
             this.updateAppartUseCase = updateAppartUseCase;
-            this.prediction = predictor;
-            this.customPredictions = customPredictions;
+            this.predictionUseCase = predictor;
+            //this.customPredictions = customPredictions;
         }
 
         [HttpGet("update-appartments")]
@@ -33,7 +33,7 @@ namespace Controllers.Admin
         [HttpGet("predict")]
         public IActionResult CalculatePrice([FromBody] ApartmentInput input)
         {
-            _output = prediction.PredictPrice(input);
+            _output = predictionUseCase.GetPricePredict(input);
             return Ok(_output);
         }
     }
