@@ -19,6 +19,13 @@ namespace Services.AdminRepositories
             return await context.apartment.ToListAsync();
         }
 
+        public async Task<List<Appartment>> GetSimilarAppartments(Appartment model)
+        {
+            return await context.apartment.Where(ap => (model.TotalSquare - 5 <= ap.TotalSquare && ap.TotalSquare <= model.TotalSquare + 5)
+                                                ).Where(ap => ap.DistrictValue == model.DistrictValue &&
+                                                ap.RoomsCount == model.RoomsCount).ToListAsync();
+        }
+
         public void UpdateAppartments(List<Appartment> models)
         {
             var uploader = new NpgsqlBulkUploader(context);
