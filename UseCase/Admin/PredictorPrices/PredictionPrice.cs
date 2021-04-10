@@ -40,24 +40,25 @@ namespace Usecase.Admin.PredictorPrices
             return model;
         }
 
-        // private void Evaluate(MLContext mlContext, ITransformer model)
-        // {
-        //     IDataView dataView = mlContext.Data.LoadFromEnumerable<Appartment>(this.adminRepository.GetAllApartment().Result);
+        private void Evaluate(MLContext mlContext, ITransformer model)
+        {
+            IDataView dataView = mlContext.Data.LoadFromEnumerable<Appartment>(this.adminRepository.GetAllApartment().Result);
 
-        //     var predictions = model.Transform(dataView);
-        //     var metrics = mlContext.Regression.Evaluate(predictions, "Label", "Score");
+            var predictions = model.Transform(dataView);
+            var metrics = mlContext.Regression.Evaluate(predictions, "Label", "Score");
 
-        //     Console.WriteLine();
-        //     Console.WriteLine($"*************************************************");
-        //     Console.WriteLine($"*       Model quality metrics evaluation         ");
-        //     Console.WriteLine($"*------------------------------------------------");
-        //     Console.WriteLine($"*       RSquared Score:      {metrics.RSquared:0.##}");
-        //     Console.WriteLine($"*       Root Mean Squared Error:      {metrics.RootMeanSquaredError}");
-        //     Console.WriteLine($"*************************************************");
-        // }
+            Console.WriteLine();
+            Console.WriteLine($"*************************************************");
+            Console.WriteLine($"*       Model quality metrics evaluation         ");
+            Console.WriteLine($"*------------------------------------------------");
+            Console.WriteLine($"*       RSquared Score:      {metrics.RSquared:0.##}");
+            Console.WriteLine($"*       Root Mean Squared Error:      {metrics.RootMeanSquaredError}");
+            Console.WriteLine($"*************************************************");
+        }
 
         public float PredictPrice(Appartment model)
         {
+            Evaluate(this.mlContext, this.model);
             var prediction = predictionFunction.Predict(model);
             Console.WriteLine($"Predicted price: {prediction.Price}");
             return prediction.Price;

@@ -1,17 +1,31 @@
 using System.Collections.Generic;
-using Microsoft.ML.Data;
+using Microsoft.AspNetCore.Mvc;
+using Models;
+using Services.SearchRepository;
 
-namespace UseCase.Admin.PredictorPrices.Data
+namespace UseCase.Search
 {
-    public class ApartmentInput
+    public class SearchUseCase
     {
-        public float? totalSquare { get; set; }
-        public int? roomsCount { get; set; }
-        public float? price { get; set; }
-        public int? floor { get; set; }
-        public string districtName { get; set; }
+        private ISearchRepository _searchRepository;
 
-        public float GetDistrictValueByName(string v)
+        public SearchUseCase(ISearchRepository searchRepository)
+        {
+            _searchRepository = searchRepository;
+        }
+
+        public IActionResult SearchExecute(SearchInput _searchModel)
+        {
+            if(_searchModel == null){
+                return new JsonResult(new {Message="Error"});
+            }
+            _searchModel.DistrictValue = GetDistrictValueByName(_searchModel.DistrictName);
+            var appartments = _searchRepository.GetAppartmentByParameters(_searchModel);
+
+            return new JsonResult(new {Appartments = appartments.Result});
+        }
+
+        private int GetDistrictValueByName(string v)
         {
             List<string> districts = new List<string>(){
                 "700-летия","Благовесный","Богдановский","Водоконал-Невского","Грузовой порт",
@@ -26,18 +40,12 @@ namespace UseCase.Admin.PredictorPrices.Data
                 // "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье",
                 // "Будище", "Ирдынь"
             };
-            
+
             if(districts.Contains(v))
             {
                 return districts.IndexOf(v) + 1;
             }
             return 0;
         }
-    }
-
-    public class ApartmentPrediction
-    {
-        [ColumnName("Score")]
-        public float Price { get; set; }
     }
 }

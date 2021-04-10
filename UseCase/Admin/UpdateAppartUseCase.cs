@@ -15,14 +15,16 @@ namespace UseCase.Admin
         public IAdminRepository adminRepo;
         private HttpClient _client;
         private string[] OrdersUrlApi = new string[]{
-            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=1000&characteristic[234][to]=26000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_1")}",
-            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=26001&characteristic[234][to]=32999&API_KEY={Environment.GetEnvironmentVariable("API_KEY_2")}",
-            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=33000&characteristic[234][to]=38500&API_KEY={Environment.GetEnvironmentVariable("API_KEY_3")}",
-            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=38501&characteristic[234][to]=50500&API_KEY={Environment.GetEnvironmentVariable("API_KEY_4")}",
-            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=50501&characteristic[234][to]=75000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_5")}",
-            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=75001&characteristic[234][to]=9999999&API_KEY={Environment.GetEnvironmentVariable("API_KEY_6")}"
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=1000&characteristic[234][to]=25000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_1")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=25001&characteristic[234][to]=30000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_2")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=30001&characteristic[234][to]=32000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_3")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=32001&characteristic[234][to]=34500&API_KEY={Environment.GetEnvironmentVariable("API_KEY_4")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=34501&characteristic[234][to]=40000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_5")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=40001&characteristic[234][to]=45000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_6")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=45001&characteristic[234][to]=50300&API_KEY={Environment.GetEnvironmentVariable("API_KEY_5")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=50301&characteristic[234][to]=73000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_6")}",
+            $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=73001&characteristic[234][to]=9000000000000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_1")}"
         };
-
         public UpdateAppartUseCase(IAdminRepository adminRepo)
         {
             this.adminRepo = adminRepo;
@@ -32,15 +34,19 @@ namespace UseCase.Admin
         public async Task<IActionResult> UpdateAppartment()
         {
             int amountApps = 0;
+            int idApi = 1;
             List<Appartment> apparts = new List<Appartment>();
             foreach (var item in this.OrdersUrlApi)
             {
                 var idOrders = await GetOrdersId(item);
                 foreach (var id in idOrders)
                 {
+                    if(idApi >= 7){
+                        idApi = 1;
+                    }
                     try
                     {
-                        Appartment appart = await CreateAppart(id);
+                        Appartment appart = await CreateAppart(id, idApi);
                         apparts.Add(appart);
                     }
                     catch (System.Exception)
@@ -48,16 +54,18 @@ namespace UseCase.Admin
                         continue;
                     }
                 }
+                idApi++;
             }
+            idApi = 1;
             amountApps = apparts.Count;
             adminRepo.UpdateAppartments(apparts);
             apparts.Clear();
             return new JsonResult(new {Amount = "Add a "+ amountApps});
         }
 
-        private async Task<Appartment> CreateAppart(JToken jToken)
+        private async Task<Appartment> CreateAppart(JToken jToken, int idApi)
         {
-            string url = BuilderUrlByIdOrder(jToken.ToString());
+            string url = BuilderUrlByIdOrder(jToken.ToString(), idApi);
             var response = await _client.GetAsync(url);
             string data = await response.Content.ReadAsStringAsync();
             JObject json = JObject.Parse(data);
@@ -82,11 +90,12 @@ namespace UseCase.Admin
                 "Калиновский","Крываловский","Луначарский","Молокозавод","Мытница","Мытница-речпорт",
                 "Мытница-центр","Пацаева","Победа","Приднепровский","Припортовый","Пятихатки","Район Д",
                 "Самолет","Седова","Соборный","Сосновка","Сосновский","Стадион","Химпоселок","Центр",
-                "Черкасский","Школьная","ЮЗР","Яблочный","Пригород","Белозерье","Геронимовка","Оршанец",
-                "Русская Поляна","Червоная Слобода","Село","Байбузы","Березняки","Крещатик","Леськи","Лозовок",
-                "Мошногорье","Мошны","Нечаевка","Новосёловка","Первомайское","Сагуновка","Светанок","Свидивок",
-                "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье",
-                "Будище", "Ирдынь"
+                "Черкасский","Школьная","ЮЗР",
+                // "Яблочный","Пригород","Белозерье","Геронимовка","Оршанец",
+                // "Русская Поляна","Червоная Слобода","Село","Байбузы","Березняки","Крещатик","Леськи","Лозовок",
+                // "Мошногорье","Мошны","Нечаевка","Новосёловка","Первомайское","Сагуновка","Светанок","Свидивок",
+                // "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье",
+                // "Будище", "Ирдынь"
             };
 
             if(districts.Contains(v))
@@ -105,10 +114,10 @@ namespace UseCase.Admin
             var items = json["items"].ToList();
             return items;
         }
-        private string BuilderUrlByIdOrder(string id)
+        private string BuilderUrlByIdOrder(string id, int idApi)
         {
             System.Console.WriteLine(id);
-            return $"https://developers.ria.com/dom/info/{id}?api_key=FJJUHJypHZaO9VupoliHJtalBWEtL1UQ4NEjnDFH";
+            return $"https://developers.ria.com/dom/info/{id}?api_key={Environment.GetEnvironmentVariable($"API_KEY_{idApi}")}";
         }
     }
 }

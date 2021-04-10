@@ -30,7 +30,7 @@ namespace Controllers.Admin
             return _output;
         }
 
-        [HttpGet("predict")]
+        [HttpPost("predict")]
         public IActionResult CalculatePrice([FromBody] ApartmentInput input)
         {
             _output = predictionUseCase.GetPricePredict(input);

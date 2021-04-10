@@ -9,9 +9,12 @@ using Microsoft.Extensions.Hosting;
 using Services;
 using Services.AdminRepositories;
 using Services.RieltorRepository;
+using Services.SearchRepository;
 using Usecase.Admin.PredictorPrices;
+using UseCase;
 using UseCase.Admin;
 using UseCase.Rieltor;
+using UseCase.Search;
 
 namespace DiplomBackend
 {
@@ -38,13 +41,18 @@ namespace DiplomBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddMvc().AddNewtonsoftJson();
+            services.AddMvc();
             services.AddControllers();
             services.AddDbContext<DbAppContext>(options => 
             options.UseNpgsql(Configuration.GetConnectionString("DiplomDatabase")));
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<IRieltorRepository, RieltorRepository>();
+            services.AddScoped<ISearchRepository, SearchRepository>();
             services.AddScoped<UpdateAppartUseCase, UpdateAppartUseCase>();
             services.AddScoped<PredictPriceUseCase, PredictPriceUseCase>();
+            services.AddScoped<SearchUseCase, SearchUseCase>();
+            services.AddScoped<InfoUseCase, InfoUseCase>();
             services.AddScoped<SearchPortitableAppsUseCase, SearchPortitableAppsUseCase>();
             services.AddScoped<PredictorPrice, PredictorPrice>();
         }
@@ -57,9 +65,8 @@ namespace DiplomBackend
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseAuthorization();
 

@@ -1,5 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Newtonsoft.Json.Linq;
 using Services.AdminRepositories;
 using Usecase.Admin.PredictorPrices;
 using UseCase.Admin.PredictorPrices.Data;
@@ -19,17 +24,44 @@ namespace UseCase.Admin
 
         public IActionResult GetPricePredict(ApartmentInput input)
         {
+            System.Console.WriteLine(input.totalSquare.Value);
+            System.Console.WriteLine(input.roomsCount.Value);
+            System.Console.WriteLine(input.floor.Value);
+            System.Console.WriteLine(input.GetDistrictValueByName(input.districtName));
             var apartmentSample = new Appartment()
             {
-                TotalSquare = input.TotalSquare.Value,
-                RoomsCount = input.RoomsCount.Value,
-                Floor = input.Floor.Value,
-                DistrictValue = input.GetDistrictValueByName(input.DistrictName),
+                TotalSquare = input.totalSquare.Value,
+                RoomsCount = input.roomsCount.Value,
+                Floor = input.floor.Value,
+                DistrictValue = input.GetDistrictValueByName(input.districtName),
                 Price = 0
             };
             float predictPrice = predictor.PredictPrice(apartmentSample);
-            input.Price = predictPrice;
-            return new JsonResult(new {Prediction = input, SimilarAppartments = adminRepository.GetSimilarAppartments(apartmentSample).Result});
+            input.price = predictPrice;
+            var apps = adminRepository.GetSimilarAppartments(apartmentSample).Result;
+            //var similarList = FormSimilarAppsList(apps);
+            return new JsonResult(new {Prediction = input, SimilarAppartments = apps});
+        }
+
+        private async Task<List<JObject>> FormSimilarAppsList(List<Appartment> portitableApps)
+        {
+            List<JObject> similarListApps = new List<JObject>();
+            HttpClient _client = new HttpClient();
+            foreach (var item in portitableApps)
+            {
+                string url = BuilderUrlByIdOrder(item.IdFromApi);
+                var response = await _client.GetAsync(url);
+                string data = await response.Content.ReadAsStringAsync();
+                JObject json = JObject.Parse(data); 
+                similarListApps.Add(json);   
+            }
+            return similarListApps;
+        } 
+
+        private string BuilderUrlByIdOrder(int id)
+        {
+            System.Console.WriteLine(id);
+            return $"https://developers.ria.com/dom/info/{id}?api_key={Environment.GetEnvironmentVariable($"API_KEY_1")}";
         }
     }
 }

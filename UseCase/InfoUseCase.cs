@@ -1,19 +1,11 @@
 using System.Collections.Generic;
-using Microsoft.ML.Data;
+using Microsoft.AspNetCore.Mvc;
 
-namespace UseCase.Admin.PredictorPrices.Data
+namespace UseCase
 {
-    public class ApartmentInput
+    public class InfoUseCase
     {
-        public float? totalSquare { get; set; }
-        public int? roomsCount { get; set; }
-        public float? price { get; set; }
-        public int? floor { get; set; }
-        public string districtName { get; set; }
-
-        public float GetDistrictValueByName(string v)
-        {
-            List<string> districts = new List<string>(){
+        List<string> districts = new List<string>(){
                 "700-летия","Благовесный","Богдановский","Водоконал-Невского","Грузовой порт",
                 "Дахновка","Днепровский","Железнодорожний вокзал","Зеленый","к-т Мир","Казбет",
                 "Калиновский","Крываловский","Луначарский","Молокозавод","Мытница","Мытница-речпорт",
@@ -26,18 +18,10 @@ namespace UseCase.Admin.PredictorPrices.Data
                 // "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье",
                 // "Будище", "Ирдынь"
             };
-            
-            if(districts.Contains(v))
-            {
-                return districts.IndexOf(v) + 1;
-            }
-            return 0;
-        }
-    }
 
-    public class ApartmentPrediction
-    {
-        [ColumnName("Score")]
-        public float Price { get; set; }
+            public IActionResult getDistrictsName()
+            {
+                return new JsonResult(new {Districts = districts});
+            }
     }
 }
