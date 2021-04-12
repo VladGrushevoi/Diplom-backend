@@ -54,7 +54,7 @@ namespace DiplomBackend
             services.AddScoped<SearchUseCase, SearchUseCase>();
             services.AddScoped<InfoUseCase, InfoUseCase>();
             services.AddScoped<SearchPortitableAppsUseCase, SearchPortitableAppsUseCase>();
-            services.AddScoped<PredictorPrice, PredictorPrice>();
+            services.AddTransient<PredictorPrice, PredictorPrice>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Models;
 using System;
+using Usecase.Admin.PredictorPrices;
 
 namespace UseCase.Admin
 {
@@ -14,6 +15,7 @@ namespace UseCase.Admin
     {
         public IAdminRepository adminRepo;
         private HttpClient _client;
+        private PredictorPrice prediction;
         private string[] OrdersUrlApi = new string[]{
             $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=1000&characteristic[234][to]=25000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_1")}",
             $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=25001&characteristic[234][to]=30000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_2")}",
@@ -25,9 +27,16 @@ namespace UseCase.Admin
             $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=50301&characteristic[234][to]=73000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_6")}",
             $"https://developers.ria.com/dom/search?category=1&realty_type=2&operation_type=1&state_id=24&city_id=24&characteristic[234][from]=73001&characteristic[234][to]=9000000000000&API_KEY={Environment.GetEnvironmentVariable("API_KEY_1")}"
         };
-        public UpdateAppartUseCase(IAdminRepository adminRepo)
+
+        internal IActionResult TrainModelUseCase()
+        {
+            return prediction.TrainModel();
+        }
+
+        public UpdateAppartUseCase(IAdminRepository adminRepo, PredictorPrice predictor)
         {
             this.adminRepo = adminRepo;
+            this.prediction = predictor;
             this._client = new HttpClient();
         }
 
@@ -60,7 +69,18 @@ namespace UseCase.Admin
             amountApps = apparts.Count;
             adminRepo.UpdateAppartments(apparts);
             apparts.Clear();
-            return new JsonResult(new {Amount = "Add a "+ amountApps});
+            return new JsonResult(new {Amount = amountApps});
+        }
+
+        public async Task<IActionResult> DeleteApartmentsUseCase()
+        {
+            int countsDeleted = await adminRepo.DeleteAllAppartments();
+            return new JsonResult(new { countDeleted = countsDeleted });
+        }
+
+        public async Task<IActionResult> GetParametersModel()
+        {
+            return await prediction.GetParametersModel();
         }
 
         private async Task<Appartment> CreateAppart(JToken jToken, int idApi)

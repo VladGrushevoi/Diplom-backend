@@ -13,14 +13,12 @@ namespace Controllers.Admin
     {
         public UpdateAppartUseCase updateAppartUseCase;
         public PredictPriceUseCase predictionUseCase;
-        //public CustomPrediction customPredictions;
         private IActionResult _output = null;
 
         public UpdateAppartController(UpdateAppartUseCase updateAppartUseCase, PredictPriceUseCase predictor)
         {
             this.updateAppartUseCase = updateAppartUseCase;
             this.predictionUseCase = predictor;
-            //this.customPredictions = customPredictions;
         }
 
         [HttpGet("update-appartments")]
@@ -35,6 +33,27 @@ namespace Controllers.Admin
         {
             _output = predictionUseCase.GetPricePredict(input);
             return Ok(_output);
+        }
+
+        [HttpDelete("delete-apartments")]
+        public IActionResult DeleteApartments()
+        {
+            _output = updateAppartUseCase.DeleteApartmentsUseCase().Result;
+            return _output;
+        }
+
+        [HttpPost("train-model")]
+        public IActionResult TrainModel()
+        {
+            _output = updateAppartUseCase.TrainModelUseCase();
+            return _output;
+        }
+
+        [HttpGet("model-parameters")]
+        public IActionResult GetParametersFromModel()
+        {
+            _output = updateAppartUseCase.GetParametersModel().Result;
+            return _output;
         }
     }
 }

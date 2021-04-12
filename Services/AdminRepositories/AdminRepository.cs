@@ -13,6 +13,11 @@ namespace Services.AdminRepositories
         {
         }
 
+        public Task<int> DeleteAllAppartments()
+        {
+            return context.Database.ExecuteSqlRawAsync("Delete from apartment");
+        }
+
         public async Task<List<Appartment>> GetAllApartment()
         {
 
