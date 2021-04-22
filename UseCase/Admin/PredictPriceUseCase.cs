@@ -24,10 +24,6 @@ namespace UseCase.Admin
 
         public IActionResult GetPricePredict(ApartmentInput input)
         {
-            System.Console.WriteLine(input.totalSquare.Value);
-            System.Console.WriteLine(input.roomsCount.Value);
-            System.Console.WriteLine(input.floor.Value);
-            System.Console.WriteLine(input.GetDistrictValueByName(input.districtName));
             var apartmentSample = new Appartment()
             {
                 TotalSquare = input.totalSquare.Value,
