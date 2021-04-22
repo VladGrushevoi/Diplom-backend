@@ -8,11 +8,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Services;
 using Services.AdminRepositories;
+using Services.AuthRepository;
+using Services.DictionaryRepositories;
 using Services.RieltorRepository;
 using Services.SearchRepository;
 using Usecase.Admin.PredictorPrices;
 using UseCase;
 using UseCase.Admin;
+using UseCase.Auth;
 using UseCase.Rieltor;
 using UseCase.Search;
 
@@ -46,14 +49,20 @@ namespace DiplomBackend
             services.AddControllers();
             services.AddDbContext<DbAppContext>(options => 
             options.UseNpgsql(Configuration.GetConnectionString("DiplomDatabase")));
+            //Repositories
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<IRieltorRepository, RieltorRepository>();
             services.AddScoped<ISearchRepository, SearchRepository>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IDictionaryRepository, DictionaryRepository>();
+            //UseCases
             services.AddScoped<UpdateAppartUseCase, UpdateAppartUseCase>();
             services.AddScoped<PredictPriceUseCase, PredictPriceUseCase>();
             services.AddScoped<SearchUseCase, SearchUseCase>();
             services.AddScoped<InfoUseCase, InfoUseCase>();
             services.AddScoped<SearchPortitableAppsUseCase, SearchPortitableAppsUseCase>();
+            services.AddScoped<AuthUseCase, AuthUseCase>();
+            services.AddScoped<ImportantPlaceUseCase, ImportantPlaceUseCase>();
             services.AddTransient<PredictorPrice, PredictorPrice>();
         }
 
