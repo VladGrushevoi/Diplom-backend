@@ -9,6 +9,8 @@ namespace UseCase.Admin.PredictorPrices.Data
         public int? roomsCount { get; set; }
         public float? price { get; set; }
         public int? floor { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
         public string districtName { get; set; }
 
         public float GetDistrictValueByName(string v)
