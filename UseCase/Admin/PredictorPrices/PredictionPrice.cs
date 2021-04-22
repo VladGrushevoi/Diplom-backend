@@ -38,6 +38,7 @@ namespace Usecase.Admin.PredictorPrices
             if(aparts.Count != 0){
                 this.model = Train(mlContext, aparts);
                 this.predictionFunction = mlContext.Model.CreatePredictionEngine<Appartment, ApartmentPrediction>(model);
+                System.Console.WriteLine("Train model request");
             }
             return new JsonResult(new {
                 Result = "Success"
@@ -46,7 +47,6 @@ namespace Usecase.Admin.PredictorPrices
 
         private ITransformer Train(MLContext mlContext, List<Appartment> aparts)
         {
-            System.Console.WriteLine("тут тоже");
             IDataView data = mlContext.Data.LoadFromEnumerable<Appartment>(aparts);
             var pipeline = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "Price")
                     .Append(mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: "TotalSquareEncoded", inputColumnName: "TotalSquare"))
@@ -100,6 +100,9 @@ namespace Usecase.Admin.PredictorPrices
             //Evaluate(this.mlContext, this.model);
             var prediction = predictionFunction.Predict(model);
             Console.WriteLine($"Predicted price: {prediction.Price}");
+            //ToDo
+            // зробить прорахунок відстані до ключовий місць
+            //
             return prediction.Price;
         }
     }
