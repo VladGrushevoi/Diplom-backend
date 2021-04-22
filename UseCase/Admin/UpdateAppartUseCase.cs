@@ -48,6 +48,7 @@ namespace UseCase.Admin
             foreach (var item in this.OrdersUrlApi)
             {
                 var idOrders = await GetOrdersId(item);
+                System.Console.WriteLine("API KEY #"+idApi);
                 foreach (var id in idOrders)
                 {
                     if(idApi >= 7){
@@ -128,7 +129,6 @@ namespace UseCase.Admin
         private async Task<List<JToken>> GetOrdersId(string url)
         {
             var response = await _client.GetAsync(url);
-            System.Console.WriteLine(response.StatusCode);
             string data = await response.Content.ReadAsStringAsync();
             JObject json = JObject.Parse(data);
             var items = json["items"].ToList();
