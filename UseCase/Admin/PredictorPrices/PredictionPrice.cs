@@ -7,6 +7,7 @@ using Microsoft.ML;
 using Microsoft.ML.Data;
 using Models;
 using Services.AdminRepositories;
+using UseCase.Admin.PredictorPrices;
 using UseCase.Admin.PredictorPrices.Data;
 
 namespace Usecase.Admin.PredictorPrices
@@ -14,15 +15,17 @@ namespace Usecase.Admin.PredictorPrices
     public class PredictorPrice
     {
         private IAdminRepository adminRepository;
+        private PrestigueDistrict prestigueDistrict;
         private MLContext mlContext;
         private ITransformer model;
         private List<Appartment> aparts;
         private PredictionEngine<Appartment, ApartmentPrediction> predictionFunction;
         private RegressionMetrics metrics;
 
-        public PredictorPrice(IAdminRepository adminRepository)
+        public PredictorPrice(IAdminRepository adminRepository, PrestigueDistrict prestigue)
         {
             this.adminRepository = adminRepository;
+            this.prestigueDistrict = prestigue;
             this.mlContext = new MLContext(seed: 0);
             aparts = adminRepository.GetAllApartment().Result;
             if(aparts.Count != 0){
@@ -100,10 +103,9 @@ namespace Usecase.Admin.PredictorPrices
             //Evaluate(this.mlContext, this.model);
             var prediction = predictionFunction.Predict(model);
             Console.WriteLine($"Predicted price: {prediction.Price}");
-            //ToDo
-            // зробить прорахунок відстані до ключовий місць
-            //
-            return prediction.Price;
+            var predictPrice = prediction.Price * prestigueDistrict.GetDistrictPrestigueValue((int)model.DistrictValue).Result;
+            
+            return (float)predictPrice;
         }
     }
 }
