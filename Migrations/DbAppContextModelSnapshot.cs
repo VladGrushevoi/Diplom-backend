@@ -71,8 +71,8 @@ namespace DiplomBackend.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("DistrictId")
-                        .HasColumnType("integer");
+                    b.Property<string>("DistrictName")
+                        .HasColumnType("text");
 
                     b.Property<double>("Latitude")
                         .HasColumnType("double precision");
@@ -80,8 +80,11 @@ namespace DiplomBackend.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("double precision");
 
-                    b.Property<int>("TypePlaceId")
+                    b.Property<int?>("TypePlaceId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("TypePlaceName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -96,6 +99,9 @@ namespace DiplomBackend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("Count")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("DistrictId")
                         .HasColumnType("integer");
@@ -135,9 +141,7 @@ namespace DiplomBackend.Migrations
                 {
                     b.HasOne("Models.TypePlace", null)
                         .WithMany("ImportantPlace")
-                        .HasForeignKey("TypePlaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TypePlaceId");
                 });
 
             modelBuilder.Entity("Models.TypePlace", b =>
