@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Newtonsoft.Json.Linq;
+using Services.AdminRepositories;
 using Services.RieltorRepository;
 using Usecase.Admin.PredictorPrices;
 using UseCase.Admin.PredictorPrices.Data;
@@ -14,11 +15,13 @@ namespace UseCase.Rieltor
     public class SearchPortitableAppsUseCase
     {
         private IRieltorRepository rieltorRepository;
+        private IAdminRepository adminRepository;
         private PredictorPrice prediction;
 
-        public SearchPortitableAppsUseCase(IRieltorRepository rieltorRepository, PredictorPrice prediction)
+        public SearchPortitableAppsUseCase(IRieltorRepository rieltorRepository, IAdminRepository adminRepository, PredictorPrice prediction)
         {
             this.rieltorRepository = rieltorRepository;
+            this.adminRepository = adminRepository;
             this.prediction = prediction;
         }
 
@@ -29,7 +32,7 @@ namespace UseCase.Rieltor
                 TotalSquare = input.totalSquare.Value,
                 RoomsCount = input.roomsCount.Value,
                 Floor = input.floor.Value,
-                DistrictValue = input.GetDistrictValueByName(input.districtName),
+                DistrictValue = adminRepository.GetDistrictByName(input.districtName).Result.Id,
                 Price = 0
             };
             float predictPrice = prediction.PredictPrice(apartmentSample);
