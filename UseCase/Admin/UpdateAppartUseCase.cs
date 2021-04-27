@@ -48,6 +48,7 @@ namespace UseCase.Admin
             foreach (var item in this.OrdersUrlApi)
             {
                 var idOrders = await GetOrdersId(item);
+                System.Console.WriteLine("API KEY #"+idApi);
                 foreach (var id in idOrders)
                 {
                     if(idApi >= 7){
@@ -94,7 +95,7 @@ namespace UseCase.Admin
                 IdFromApi = Int32.Parse(json["realty_id"].ToString()),
                 TotalSquare = float.Parse(json["total_square_meters"].ToString()),
                 RoomsCount = float.Parse(json["rooms_count"].ToString()),
-                DistrictValue = GetDistrictValueByName(json["district_name"].ToString()),
+                DistrictValue = adminRepo.GetDistrictByName(json["district_name"].ToString()).Result.Id,
                 Price = float.Parse(json["priceArr"]["1"].ToString()),
                 Floor = float.Parse(json["floor"].ToString())
             };
@@ -102,33 +103,9 @@ namespace UseCase.Admin
             return appartTemp;
         }
 
-        private float GetDistrictValueByName(string v)
-        {
-            List<string> districts = new List<string>(){
-                "700-летия","Благовесный","Богдановский","Водоконал-Невского","Грузовой порт",
-                "Дахновка","Днепровский","Железнодорожний вокзал","Зеленый","к-т Мир","Казбет",
-                "Калиновский","Крываловский","Луначарский","Молокозавод","Мытница","Мытница-речпорт",
-                "Мытница-центр","Пацаева","Победа","Приднепровский","Припортовый","Пятихатки","Район Д",
-                "Самолет","Седова","Соборный","Сосновка","Сосновский","Стадион","Химпоселок","Центр",
-                "Черкасский","Школьная","ЮЗР",
-                // "Яблочный","Пригород","Белозерье","Геронимовка","Оршанец",
-                // "Русская Поляна","Червоная Слобода","Село","Байбузы","Березняки","Крещатик","Леськи","Лозовок",
-                // "Мошногорье","Мошны","Нечаевка","Новосёловка","Первомайское","Сагуновка","Светанок","Свидивок",
-                // "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье",
-                // "Будище", "Ирдынь"
-            };
-
-            if(districts.Contains(v))
-            {
-                return districts.IndexOf(v) + 1;
-            }
-            return 0;
-        }
-
         private async Task<List<JToken>> GetOrdersId(string url)
         {
             var response = await _client.GetAsync(url);
-            System.Console.WriteLine(response.StatusCode);
             string data = await response.Content.ReadAsStringAsync();
             JObject json = JObject.Parse(data);
             var items = json["items"].ToList();

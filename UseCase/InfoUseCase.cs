@@ -1,27 +1,38 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Services.DictionaryRepositories;
 
 namespace UseCase
 {
     public class InfoUseCase
     {
-        List<string> districts = new List<string>(){
-                "700-летия","Благовесный","Богдановский","Водоконал-Невского","Грузовой порт",
-                "Дахновка","Днепровский","Железнодорожний вокзал","Зеленый","к-т Мир","Казбет",
-                "Калиновский","Крываловский","Луначарский","Молокозавод","Мытница","Мытница-речпорт",
-                "Мытница-центр","Пацаева","Победа","Приднепровский","Припортовый","Пятихатки","Район Д",
-                "Самолет","Седова","Соборный","Сосновка","Сосновский","Стадион","Химпоселок","Центр",
-                "Черкасский","Школьная","ЮЗР",
-                // "Яблочный","Пригород","Белозерье","Геронимовка","Оршанец",
-                // "Русская Поляна","Червоная Слобода","Село","Байбузы","Березняки","Крещатик","Леськи","Лозовок",
-                // "Мошногорье","Мошны","Нечаевка","Новосёловка","Первомайское","Сагуновка","Светанок","Свидивок",
-                // "Сокирно","Софиевка","Степанки","Тубольцы","Хацьки","Худяки","Хутора","Чернявка","Шелепухи","Яснозорье",
-                // "Будище", "Ирдынь"
-            };
+        private IDictionaryRepository dictionaryRepository;
 
-            public IActionResult getDistrictsName()
-            {
-                return new JsonResult(new {Districts = districts});
-            }
+        public InfoUseCase(IDictionaryRepository dictionaryRepository)
+        {
+            this.dictionaryRepository = dictionaryRepository;
+        }
+
+        public IActionResult GetDistrictsName()
+        {
+            return new JsonResult(new { Districts = dictionaryRepository.GetDistrics().Result });
+        }
+
+        public IActionResult GetTypePlaces()
+        {
+            return new JsonResult(new { Districts = dictionaryRepository.GetTypePlaces().Result });
+        }
+
+        public IActionResult SetDistrics()
+        {
+            dictionaryRepository.InitDistrics();
+            return new JsonResult(new { Message = "Добавились райони" });
+        }
+
+        public IActionResult InitTypePlaces()
+        {
+            dictionaryRepository.InitTypePlaces();
+            return new JsonResult(new { Message = "Добавились типи місць" });
+        }
     }
 }

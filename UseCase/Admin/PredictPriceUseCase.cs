@@ -24,16 +24,12 @@ namespace UseCase.Admin
 
         public IActionResult GetPricePredict(ApartmentInput input)
         {
-            System.Console.WriteLine(input.totalSquare.Value);
-            System.Console.WriteLine(input.roomsCount.Value);
-            System.Console.WriteLine(input.floor.Value);
-            System.Console.WriteLine(input.GetDistrictValueByName(input.districtName));
             var apartmentSample = new Appartment()
             {
                 TotalSquare = input.totalSquare.Value,
                 RoomsCount = input.roomsCount.Value,
                 Floor = input.floor.Value,
-                DistrictValue = input.GetDistrictValueByName(input.districtName),
+                DistrictValue = adminRepository.GetDistrictByName(input.districtName).Result.Id,
                 Price = 0
             };
             float predictPrice = predictor.PredictPrice(apartmentSample);

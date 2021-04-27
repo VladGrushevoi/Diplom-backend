@@ -2,13 +2,13 @@
 
 namespace DiplomBackend.Migrations
 {
-    public partial class addIdToApps : Migration
+    public partial class addTypePlaceAnewAttribute : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "IdFromApi",
-                table: "apartment",
+                name: "Count",
+                table: "typePlaces",
                 type: "integer",
                 nullable: false,
                 defaultValue: 0);
@@ -17,8 +17,8 @@ namespace DiplomBackend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IdFromApi",
-                table: "apartment");
+                name: "Count",
+                table: "typePlaces");
         }
     }
 }

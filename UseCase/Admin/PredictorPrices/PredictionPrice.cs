@@ -7,6 +7,7 @@ using Microsoft.ML;
 using Microsoft.ML.Data;
 using Models;
 using Services.AdminRepositories;
+using UseCase.Admin.PredictorPrices;
 using UseCase.Admin.PredictorPrices.Data;
 
 namespace Usecase.Admin.PredictorPrices
@@ -14,15 +15,17 @@ namespace Usecase.Admin.PredictorPrices
     public class PredictorPrice
     {
         private IAdminRepository adminRepository;
+        private PrestigueDistrict prestigueDistrict;
         private MLContext mlContext;
         private ITransformer model;
         private List<Appartment> aparts;
         private PredictionEngine<Appartment, ApartmentPrediction> predictionFunction;
         private RegressionMetrics metrics;
 
-        public PredictorPrice(IAdminRepository adminRepository)
+        public PredictorPrice(IAdminRepository adminRepository, PrestigueDistrict prestigue)
         {
             this.adminRepository = adminRepository;
+            this.prestigueDistrict = prestigue;
             this.mlContext = new MLContext(seed: 0);
             aparts = adminRepository.GetAllApartment().Result;
             if(aparts.Count != 0){
@@ -38,6 +41,7 @@ namespace Usecase.Admin.PredictorPrices
             if(aparts.Count != 0){
                 this.model = Train(mlContext, aparts);
                 this.predictionFunction = mlContext.Model.CreatePredictionEngine<Appartment, ApartmentPrediction>(model);
+                System.Console.WriteLine("Train model request");
             }
             return new JsonResult(new {
                 Result = "Success"
@@ -46,7 +50,6 @@ namespace Usecase.Admin.PredictorPrices
 
         private ITransformer Train(MLContext mlContext, List<Appartment> aparts)
         {
-            System.Console.WriteLine("тут тоже");
             IDataView data = mlContext.Data.LoadFromEnumerable<Appartment>(aparts);
             var pipeline = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "Price")
                     .Append(mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: "TotalSquareEncoded", inputColumnName: "TotalSquare"))
@@ -100,7 +103,9 @@ namespace Usecase.Admin.PredictorPrices
             //Evaluate(this.mlContext, this.model);
             var prediction = predictionFunction.Predict(model);
             Console.WriteLine($"Predicted price: {prediction.Price}");
-            return prediction.Price;
+            var predictPrice = prediction.Price * prestigueDistrict.GetDistrictPrestigueValue((int)model.DistrictValue).Result;
+            
+            return (float)predictPrice;
         }
     }
 }
