@@ -24,15 +24,24 @@ namespace Services.DictionaryRepositories
         public async void InitTypePlaces()
         {
             List<TypePlace> typePlaces = new List<TypePlace>(){
-                new TypePlace{Name = "Торговий центр"},
-                new TypePlace{Name = "Зупинка громадського транспорту"},
-                new TypePlace{Name = "Головна дорога"},
-                new TypePlace{Name = "Адміністративна будівля"},
-                new TypePlace{Name = "Школа"},
-                new TypePlace{Name = "Садочок"},
-                new TypePlace{Name = "Навчальний заклад"},
-                new TypePlace{Name = "Продуктовий магазин"},
-                new TypePlace{Name = "Інше"},
+                new TypePlace{Name = "Торговий центр", Count = 1},
+                new TypePlace{Name = "Зупинка громадського транспорту", Count = 5},
+                new TypePlace{Name = "Головна дорога", Count = 1},
+                new TypePlace{Name = "Адміністративна будівля", Count = 1},
+                new TypePlace{Name = "Школа", Count = 2},
+                new TypePlace{Name = "Садочок", Count = 2},
+                new TypePlace{Name = "Навчальний заклад", Count = 1},
+                new TypePlace{Name = "Продуктовий магазин", Count = 5},
+                new TypePlace{Name = "Заклад харчування", Count = 4},
+                new TypePlace{Name = "Банк", Count = 2},
+                new TypePlace{Name = "Медична устонова", Count = 2},
+                new TypePlace{Name = "Автобусний вокзал", Count = 1},
+                new TypePlace{Name = "ЖД вокзал", Count = 1},
+                new TypePlace{Name = "Авто заправка",  Count = 1},
+                new TypePlace{Name = "Парк", Count = 1},
+                new TypePlace{Name = "Пляж", Count = 1},
+                new TypePlace{Name = "Цвинтар", Count = 1},
+                new TypePlace{Name = "Інше", Count = 1},
             };
             await context.typePlaces.AddRangeAsync(typePlaces);
 
