@@ -26,8 +26,28 @@ namespace Controllers.Admin
         [HttpDelete("{id}/delete-place")]
         public IActionResult DeletePlace([FromRoute] int id)
         {
-            System.Console.WriteLine(id);
             _output = important.DeletePlace(id);
+            return Ok(_output);
+        }
+
+        [HttpGet("get-places")]
+        public IActionResult GetAllPlaces()
+        {
+            _output = important.GetAllPlaces();
+            return Ok(_output);
+        }
+
+        [HttpGet("{name}/places")]
+        public IActionResult GetPlacesByNameDistrict([FromRoute] string name)
+        {
+            _output = important.GetPlaceByDistrictName(name);
+            return Ok(_output);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetPlaceById([FromRoute] int id)
+        {
+            _output = important.GetOlaceById(id);
             return Ok(_output);
         }
     }
