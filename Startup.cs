@@ -15,6 +15,7 @@ using Services.SearchRepository;
 using Usecase.Admin.PredictorPrices;
 using UseCase;
 using UseCase.Admin;
+using UseCase.Admin.PredictorPrices;
 using UseCase.Auth;
 using UseCase.Rieltor;
 using UseCase.Search;
@@ -64,6 +65,7 @@ namespace DiplomBackend
             services.AddScoped<AuthUseCase, AuthUseCase>();
             services.AddScoped<ImportantPlaceUseCase, ImportantPlaceUseCase>();
             services.AddTransient<PredictorPrice, PredictorPrice>();
+            services.AddScoped<PrestigueDistrict, PrestigueDistrict>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
