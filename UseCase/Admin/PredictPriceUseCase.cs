@@ -29,7 +29,7 @@ namespace UseCase.Admin
                 TotalSquare = input.totalSquare.Value,
                 RoomsCount = input.roomsCount.Value,
                 Floor = input.floor.Value,
-                DistrictValue = input.GetDistrictValueByName(input.districtName),
+                DistrictValue = adminRepository.GetDistrictByName(input.districtName).Result.Id,
                 Price = 0
             };
             float predictPrice = predictor.PredictPrice(apartmentSample);
