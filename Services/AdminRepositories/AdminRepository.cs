@@ -54,7 +54,7 @@ namespace Services.AdminRepositories
         {
             var result = await context.districts.FirstOrDefaultAsync(d => d.Name == name);
             if(result == null){
-                result.Id = 0;
+                return null;
             }
             return result;
         }

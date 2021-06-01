@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Usecase.Admin.PredictorPrices;
 using UseCase.Admin;
-using UseCase.Admin.PredictorPrices;
 using UseCase.Admin.PredictorPrices.Data;
 
 namespace Controllers.Admin
@@ -35,6 +33,13 @@ namespace Controllers.Admin
             return Ok(_output);
         }
 
+        [HttpPost("clasification-predict")]
+        public IActionResult ClasificationPredict([FromBody] ApartmentInput input)
+        {
+            _output = predictionUseCase.ClassificationPredict(input);
+            return Ok(_output);
+        }
+
         [HttpDelete("delete-apartments")]
         public IActionResult DeleteApartments()
         {
@@ -54,6 +59,20 @@ namespace Controllers.Admin
         {
             _output = updateAppartUseCase.GetParametersModel().Result;
             return _output;
+        }
+
+        [HttpPost("custom")]
+        public IActionResult TestCustomPredict([FromBody] ApartmentInput input)
+        {
+            _output = predictionUseCase.TestCustomPrediction(input);
+            return Ok(_output);
+        }
+
+        [HttpPost("custom-clasification")]
+        public IActionResult TestCudtomClassification([FromBody] ApartmentInput input)
+        {
+            _output = predictionUseCase.CustomClassificationPredict(input);
+            return Ok(_output);
         }
     }
 }

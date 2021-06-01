@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Services.AdminRepositories;
 using Services.RieltorRepository;
 using Usecase.Admin.PredictorPrices;
+using UseCase.Admin.PredictorPrices;
 using UseCase.Admin.PredictorPrices.Data;
 
 namespace UseCase.Rieltor
@@ -16,16 +17,16 @@ namespace UseCase.Rieltor
     {
         private IRieltorRepository rieltorRepository;
         private IAdminRepository adminRepository;
-        private PredictorPrice prediction;
+        private PrestigueDistrict prestigue;
 
-        public SearchPortitableAppsUseCase(IRieltorRepository rieltorRepository, IAdminRepository adminRepository, PredictorPrice prediction)
+        public SearchPortitableAppsUseCase(IRieltorRepository rieltorRepository, IAdminRepository adminRepository, PrestigueDistrict prestigue)
         {
             this.rieltorRepository = rieltorRepository;
             this.adminRepository = adminRepository;
-            this.prediction = prediction;
+            this.prestigue = prestigue;
         }
 
-        public IActionResult GetPortitableOrders(ApartmentInput input)
+        public IActionResult GetPortitableOrders(ApartmentInput input, int methodType)
         {
             var apartmentSample = new Appartment()
             {
@@ -35,10 +36,28 @@ namespace UseCase.Rieltor
                 DistrictValue = adminRepository.GetDistrictByName(input.districtName).Result.Id,
                 Price = 0
             };
-            float predictPrice = prediction.PredictPrice(apartmentSample);
+            float predictPrice = 0;
+            switch(methodType){
+                case 1:
+                    predictPrice = new PredictorPrice(adminRepository, prestigue).PredictPrice(apartmentSample);
+                    break;
+                case 2:
+                    double[,] data = new double[4, 1];
+                    data[0, 0] = (double)input.totalSquare;
+                    data[1, 0] = (double)input.roomsCount;
+                    data[2, 0] = (double)adminRepository.GetDistrictByName(input.districtName).Result.Id;
+                    data[3, 0] = (double)input.floor;
+                    predictPrice = (float)new CustomPrediction(adminRepository, prestigue).Predict(data);
+                    break;
+                case 3:
+                    predictPrice = new ClasificationModel(adminRepository, prestigue).PredictPrice(apartmentSample);
+                    break;
+                case 4:
+                    predictPrice = new CustomClassification(adminRepository, prestigue).PredictPrice(apartmentSample);
+                    break;
+            }
             apartmentSample.Price = predictPrice;
             var portitableApparts = rieltorRepository.GetOrdersByLessPredictPrice(apartmentSample).Result;
-            //var similarAppartments = FormSimilarAppsList(portitableApparts);
             return new JsonResult(new { Prediction = apartmentSample, SimilarAppartments = portitableApparts });
         }
 

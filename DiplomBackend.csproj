@@ -9,5 +9,6 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.2"/>
     <PackageReference Include="Microsoft.ML" Version="1.5.5"/>
     <PackageReference Include="Microsoft.ML.FastTree" Version="1.5.5"/>
+    <PackageReference Include="MathNet.Numerics" Version="4.15.0"/>
   </ItemGroup>
 </Project>

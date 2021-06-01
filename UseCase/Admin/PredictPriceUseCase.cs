@@ -7,6 +7,7 @@ using Models;
 using Newtonsoft.Json.Linq;
 using Services.AdminRepositories;
 using Usecase.Admin.PredictorPrices;
+using UseCase.Admin.PredictorPrices;
 using UseCase.Admin.PredictorPrices.Data;
 
 namespace UseCase.Admin
@@ -14,12 +15,12 @@ namespace UseCase.Admin
     public class PredictPriceUseCase
     {
         private IAdminRepository adminRepository;
-        private PredictorPrice predictor;
+        private PrestigueDistrict prestigue;
 
-        public PredictPriceUseCase(IAdminRepository adminRepository, PredictorPrice predictor)
+        public PredictPriceUseCase(IAdminRepository adminRepository, PrestigueDistrict prestigue)
         {
             this.adminRepository = adminRepository;
-            this.predictor = predictor;
+            this.prestigue = prestigue;
         }
 
         public IActionResult GetPricePredict(ApartmentInput input)
@@ -32,11 +33,64 @@ namespace UseCase.Admin
                 DistrictValue = adminRepository.GetDistrictByName(input.districtName).Result.Id,
                 Price = 0
             };
-            float predictPrice = predictor.PredictPrice(apartmentSample);
+            float predictPrice = new PredictorPrice(adminRepository, prestigue).PredictPrice(apartmentSample);
             input.price = predictPrice;
             var apps = adminRepository.GetSimilarAppartments(apartmentSample).Result;
             //var similarList = FormSimilarAppsList(apps);
             return new JsonResult(new {Prediction = input, SimilarAppartments = apps});
+        }
+
+        public IActionResult ClassificationPredict(ApartmentInput input)
+        {
+            var apartmentSample = new Appartment()
+            {
+                TotalSquare = input.totalSquare.Value,
+                RoomsCount = input.roomsCount.Value,
+                Floor = input.floor.Value,
+                DistrictValue = adminRepository.GetDistrictByName(input.districtName).Result.Id,
+                Price = 0
+            };
+             float predictPrice = new ClasificationModel(adminRepository, prestigue).PredictPrice(apartmentSample);
+            input.price = predictPrice;
+            var apps = adminRepository.GetSimilarAppartments(apartmentSample).Result;
+            return new JsonResult(new {Prediction = input, SimilarAppartments = apps});
+        }
+
+        public IActionResult CustomClassificationPredict(ApartmentInput input)
+        {
+            var apartmentSample = new Appartment()
+            {
+                TotalSquare = input.totalSquare.Value,
+                RoomsCount = input.roomsCount.Value,
+                Floor = input.floor.Value,
+                DistrictValue = adminRepository.GetDistrictByName(input.districtName).Result.Id,
+                Price = 0
+            };
+             float predictPrice = new CustomClassification(adminRepository, prestigue).PredictPrice(apartmentSample);
+            input.price = predictPrice;
+            var apps = adminRepository.GetSimilarAppartments(apartmentSample).Result;
+            return new JsonResult(new {Prediction = input, SimilarAppartments = apps});
+        }
+
+        public IActionResult TestCustomPrediction(ApartmentInput input)
+        {
+            double[,] data = new double[4,1];
+            data[0,0] = (double)input.totalSquare;
+            data[1, 0] = (double)input.roomsCount;
+            data[2, 0] = (double)adminRepository.GetDistrictByName(input.districtName).Result.Id;
+            data[3, 0] = (double)input.floor;
+            var apartmentSample = new Appartment()
+            {
+                TotalSquare = input.totalSquare.Value,
+                RoomsCount = input.roomsCount.Value,
+                Floor = input.floor.Value,
+                DistrictValue = adminRepository.GetDistrictByName(input.districtName).Result.Id,
+                Price = 0
+            };
+            double predictPrice = new CustomPrediction(adminRepository, prestigue).Predict(data);
+            input.price = (float)predictPrice;
+            var apps = adminRepository.GetSimilarAppartments(apartmentSample).Result;
+           return new JsonResult(new {Prediction = input, SimilarAppartments = apps});
         }
 
         private async Task<List<JObject>> FormSimilarAppsList(List<Appartment> portitableApps)

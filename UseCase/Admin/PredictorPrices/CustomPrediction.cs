@@ -1,66 +1,79 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using MathNet.Numerics.LinearAlgebra;
 using Models;
 using Services.AdminRepositories;
+
+
 
 namespace UseCase.Admin.PredictorPrices
 {
     public class CustomPrediction
     {
         IAdminRepository adminRepository;
-        List<Appartment> apps = new List<Appartment>();
-        List<float> prices = new List<float>();
-        float[] B = new float[5];
-        List<float> errors = new List<float>();
-        float error = 0.5f;
-        float alpha = 0.01f;
+        PrestigueDistrict prestigueDistrict;
+        float _b;
+        double[] _w;
 
-        public CustomPrediction(IAdminRepository adminRepository)
+        public CustomPrediction(IAdminRepository adminRepository, PrestigueDistrict prestigue)
         {
             this.adminRepository = adminRepository;
-            this.apps = adminRepository.GetAllApartment().Result;
-            this.apps.ForEach(item => prices.Add(item.Price));
-            //Training();
+            this.prestigueDistrict = prestigue;
+            this._b = 0;
+            var data = FormXVectors(adminRepository);
+            Fit(data.Item1, data.Item2);
         }
 
-        private void Training()
+        public void Fit(double[,] X, double[,] y)
         {
-            for(int i = 0; i < apps.Count * 4; i++)
+            var input = ExtendInputWithOnes(X);
+            var output = Matrix<double>.Build.DenseOfArray(y);
+
+            var coeficients = ((input.Transpose() * input).Inverse() * input.Transpose() * output)
+              		 	.Transpose().Row(0);
+            _b = (float)coeficients.ElementAt(0);
+            _w = SubArray(coeficients.ToArray(), 1, X.GetLength(1));
+        }
+
+        private Matrix<double> ExtendInputWithOnes(double[,] X)
+        {
+            var ones = Matrix<double>.Build.Dense(X.GetLength(0), 1, 1d);
+            var extendedX = ones.Append(Matrix<double>.Build.DenseOfArray(X));
+
+            return extendedX;
+        }
+
+        private double[] SubArray(double[] data, int index, int length)
+        {
+            double[] result = new double[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
+        }
+
+        public double Predict(double[,] x)
+        {
+            var input = Matrix<double>.Build.DenseOfArray(x).Transpose();
+            var w = Vector<double>.Build.DenseOfArray(_w);
+            var price = input.Multiply(w).ToArray().Sum() + _b;
+            var newPrice = price * prestigueDistrict.GetDistrictPrestigueValue((int)x[2,0]).Result;
+            return newPrice;
+        }
+
+        private Tuple<double[,], double[,]> FormXVectors(IAdminRepository admin)
+        {
+            var apps = admin.GetAllApartment().Result.ToList();
+            double[,] x = new double[apps.Count, 4];
+            double[,] y = new double[apps.Count, 1];
+            for(int i = 0; i < apps.Count; i++)
             {
-                int idx = i % apps.Count;
-                float p = -(B[0] +
-                            B[1] * apps[idx].TotalSquare +
-                            B[2] * apps[idx].RoomsCount +
-                            B[3] * apps[idx].Floor +
-                            B[4] * apps[idx].DistrictValue);
-                float pred = Convert.ToSingle(1 / (1 + Math.Pow(2.71828f, p)));
-                error = apps[idx].Price - pred;
-
-                B[0] = B[0] - alpha * error * pred * (1 - pred) * 1.0f;
-                B[1] = B[1] + alpha * error * pred * (1 - pred) * apps[idx].TotalSquare;
-                B[2] = B[2] + alpha * error * pred * (1 - pred) * apps[idx].RoomsCount;
-                B[3] = B[3] + alpha * error * pred * (1 - pred) * apps[idx].Floor;
-                B[4] = B[4] + alpha * error * pred * (1 - pred) * apps[idx].DistrictValue;
-
-                errors.Add(error);
+                x[i,0] = apps[i].TotalSquare;
+                x[i,1] = apps[i].RoomsCount;
+                x[i,2] = apps[i].DistrictValue;
+                x[i,3] = apps[i].Floor;
+                y[i,0] = apps[i].Price;
             }
-        }
-
-        public void Test()
-        {
-            Appartment testApp = new Appartment(){
-                TotalSquare = 20,
-                RoomsCount = 1,
-                Floor = 1,
-                DistrictValue = 28
-            };
-
-            float pred = B[0] + B[1] * testApp.TotalSquare + 
-                                B[2] * testApp.RoomsCount +
-                                B[3] * testApp.Floor + 
-                                B[4] * testApp.DistrictValue;
-
-            System.Console.WriteLine("Predicted = " + pred);
+            return new Tuple<double[,], double[,]>(x,y);
         }
     }
 }
