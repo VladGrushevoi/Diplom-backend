@@ -37,7 +37,7 @@ namespace UseCase.Admin
             return new JsonResult(new { items = places });
         }
 
-        public IActionResult GetOlaceById(int id)
+        public IActionResult GetPlaceById(int id)
         {
             var place = adminRepository.GetPlaceById(id).Result;
             return new JsonResult( new { place = place } );

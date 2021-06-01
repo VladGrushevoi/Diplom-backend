@@ -47,7 +47,7 @@ namespace Controllers.Admin
         [HttpGet("{id}")]
         public IActionResult GetPlaceById([FromRoute] int id)
         {
-            _output = important.GetOlaceById(id);
+            _output = important.GetPlaceById(id);
             return Ok(_output);
         }
     }

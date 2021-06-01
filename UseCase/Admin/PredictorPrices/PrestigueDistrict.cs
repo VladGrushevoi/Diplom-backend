@@ -38,7 +38,6 @@ namespace UseCase.Admin.PredictorPrices
                     foreach (var typePlace in typePlaces)
                     {
                         prestigueRate += CalculateRate(district, typePlace, importantPlace) ? 0.005d : -0.005d;
-                        System.Console.WriteLine(prestigueRate);
                     }
                     DistrictToPrestigue.Add(district.Name, prestigueRate);
                     prestigueRate = 1;

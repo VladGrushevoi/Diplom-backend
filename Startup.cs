@@ -49,7 +49,7 @@ namespace DiplomBackend
             services.AddMvc();
             services.AddControllers();
             services.AddDbContext<DbAppContext>(options => 
-            options.UseNpgsql(Configuration.GetConnectionString("DiplomDatabase")));
+                options.UseNpgsql(Configuration.GetConnectionString("DiplomDatabase")));
             //Repositories
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<IRieltorRepository, RieltorRepository>();
@@ -64,8 +64,10 @@ namespace DiplomBackend
             services.AddScoped<SearchPortitableAppsUseCase, SearchPortitableAppsUseCase>();
             services.AddScoped<AuthUseCase, AuthUseCase>();
             services.AddScoped<ImportantPlaceUseCase, ImportantPlaceUseCase>();
-            services.AddTransient<PredictorPrice, PredictorPrice>();
             services.AddScoped<PrestigueDistrict, PrestigueDistrict>();
+            services.AddScoped<PredictorPrice, PredictorPrice>();
+            services.AddScoped<ClasificationModel, ClasificationModel>();
+            services.AddScoped<CustomPrediction, CustomPrediction>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
